@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"migrate/lib"
 	"os"
 
 	"github.com/codegangsta/cli"
@@ -16,7 +17,12 @@ func main() {
 		cli.StringFlag{
 			Name:  "conf, c",
 			Value: "",
-			Usage: "Database configuration file",
+			Usage: "specify database configuration file",
+		},
+		cli.StringFlag{
+			Name:  "migrations, m",
+			Value: "",
+			Usage: "specify migration files location",
 		},
 	}
 
@@ -28,7 +34,9 @@ func main() {
 			Usage: "create the db",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				fmt.Printf("%#v", c.Args())
+				conf := lib.GetConfig("")
+				db := lib.Connect(conf)
+				lib.Create(db, conf)
 			},
 		},
 		{

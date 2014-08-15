@@ -1,24 +1,25 @@
 package lib
 
 import (
+	"database/sql"
 	"log"
 	"os/exec"
 
 	"strings"
 )
 
-func Create() {
+func Create(db *sql.DB, conf DatabaseConfig) {
 	CreateDatabase(conf)
-	CreateSchemaMigrationsTable()
+	CreateSchemaMigrations(db)
 }
 
-func CreateSchemaMigrations() {
-	if _, err := Get().Exec(`
+func CreateSchemaMigrations(db *sql.DB) {
+	if _, err := db.Exec(`
     create table schema_migrations (
       version varchar(255) not null unique
     );
-  `); err != nil {
-		log.Println("CreateSchemaMigrationsTable", err)
+  `); err != nil && !strings.Contains(err.Error(), "already exists") {
+		log.Fatalln(err)
 	}
 }
 

@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"database/sql"
 	"io/ioutil"
 	"log"
 	"path"
@@ -9,27 +10,27 @@ import (
 	"strconv"
 )
 
-func Migrate() {
+func Migrate(db *sql.DB) {
 	_, currentfile, _, _ := runtime.Caller(1)
-	pending := GetPendingMigrations()
+	pending := GetPendingMigrations(db)
 	for version, filename := range pending {
 		contents, err := ioutil.ReadFile(path.Join(path.Dir(currentfile), "migrations", filename))
 		if err != nil {
 			log.Fatalln("Readfile", filename, err)
 		}
-		_, err = Get().Exec(string(contents))
+		_, err = db.Exec(string(contents))
 		if err != nil {
 			log.Fatalln("Exec:", filename, err)
 		}
-		_, err = Get().Exec(`insert into schema_migrations (version) values ($1)`, version)
+		_, err = db.Exec(`insert into schema_migrations (version) values ($1)`, version)
 		if err != nil {
 			log.Fatalln("Insert version", err)
 		}
 	}
 }
 
-func CheckForOutstandingMigrations() {
-	pending := GetPendingMigrations()
+func CheckForOutstandingMigrations(db *sql.DB) {
+	pending := GetPendingMigrations(db)
 	if len(pending) > 0 {
 		log.Println("--- Pending Migrations ---")
 		for _, filename := range pending {
@@ -39,8 +40,8 @@ func CheckForOutstandingMigrations() {
 	}
 }
 
-func GetDbMigrations() []string {
-	rows, err := Get().Query(`select * from schema_migrations`)
+func GetDbMigrations(db *sql.DB) []string {
+	rows, err := db.Query(`select * from schema_migrations`)
 	if err != nil {
 		log.Fatal("Get schema migrations ", err)
 	}
@@ -68,9 +69,9 @@ func GetMigrationVersionFilenameMap() map[string]string {
 	return _map
 }
 
-func GetPendingMigrations() map[string]string {
+func GetPendingMigrations(db *sql.DB) map[string]string {
 	pending := GetMigrationVersionFilenameMap()
-	migrated := GetDbMigrations()
+	migrated := GetDbMigrations(db)
 	for version, _ := range migrated {
 		delete(pending, strconv.Itoa(version))
 	}
