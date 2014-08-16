@@ -27,7 +27,7 @@ func CreateDatabase(conf DatabaseConfig) {
 	cmd := exec.Command("createdb", conf.Database)
 	if output, err := cmd.CombinedOutput(); err != nil {
 		if !strings.Contains(string(output), "already exists") {
-			log.Fatalln(string(output))
+			log.Fatalln(string(output), err)
 		}
 	}
 }

@@ -41,7 +41,7 @@ func main() {
 		},
 		{
 			Name:  "db:migrate",
-			Usage: "create the db",
+			Usage: "run outstanding migrations",
 			Flags: flags,
 			Action: func(c *cli.Context) {
 				fmt.Printf("%#v", c.Args())
@@ -49,7 +49,7 @@ func main() {
 		},
 		{
 			Name:  "db:rollback",
-			Usage: "create the db",
+			Usage: "rollback last migration",
 			Flags: flags,
 			Action: func(c *cli.Context) {
 				fmt.Printf("%#v", c.Args())
@@ -57,7 +57,7 @@ func main() {
 		},
 		{
 			Name:  "db:structure:dump",
-			Usage: "create the db",
+			Usage: "dump the structure of the database",
 			Flags: flags,
 			Action: func(c *cli.Context) {
 				fmt.Printf("%#v", c.Args())
@@ -65,7 +65,7 @@ func main() {
 		},
 		{
 			Name:  "db:version",
-			Usage: "create the db",
+			Usage: "print the last migrated version",
 			Flags: flags,
 			Action: func(c *cli.Context) {
 				fmt.Printf("%#v", c.Args())
@@ -73,15 +73,7 @@ func main() {
 		},
 		{
 			Name:  "db:drop",
-			Usage: "create the db",
-			Flags: flags,
-			Action: func(c *cli.Context) {
-				fmt.Printf("%#v", c.Args())
-			},
-		},
-		{
-			Name:  "db:setup",
-			Usage: "create the db",
+			Usage: "drop the db",
 			Flags: flags,
 			Action: func(c *cli.Context) {
 				fmt.Printf("%#v", c.Args())
@@ -89,10 +81,18 @@ func main() {
 		},
 		{
 			Name:  "db:test:prepare",
-			Usage: "create the db",
+			Usage: "run migrations against test database",
 			Flags: flags,
 			Action: func(c *cli.Context) {
 				fmt.Printf("%#v", c.Args())
+			},
+		},
+		{
+			Name:  "generate",
+			Usage: "generate a new migration",
+			Flags: flags,
+			Action: func(c *cli.Context) {
+				lib.Generate(c.Args().First())
 			},
 		},
 	}
