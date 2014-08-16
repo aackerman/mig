@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"migrate/lib"
+	"mig/lib"
 	"os"
 
 	"github.com/codegangsta/cli"
@@ -11,7 +11,7 @@ import (
 func main() {
 	app := cli.NewApp()
 
-	app.Name = "migrate"
+	app.Name = "mig"
 
 	flags := []cli.Flag{
 		cli.StringFlag{
