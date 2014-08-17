@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"mig/lib"
 	"os"
 	"path"
@@ -53,7 +53,7 @@ func main() {
 			Usage: "rollback last migration",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				fmt.Printf("%#v", c.Args())
+				log.Fatalln("Not implemented")
 			},
 		},
 		{
@@ -61,7 +61,7 @@ func main() {
 			Usage: "dump the structure of the database",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				fmt.Printf("%#v", c.Args())
+				log.Fatalln("Not implemented")
 			},
 		},
 		{
@@ -69,7 +69,7 @@ func main() {
 			Usage: "print the last migrated version",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				fmt.Printf("%#v", c.Args())
+				log.Fatalln("Not implemented")
 			},
 		},
 		{
@@ -86,7 +86,7 @@ func main() {
 			Usage: "run migrations against test database",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				fmt.Printf("%#v", c.Args())
+				log.Fatalln("Not implemented")
 			},
 		},
 		{
