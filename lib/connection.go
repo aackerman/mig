@@ -33,7 +33,7 @@ func Connect(conf DatabaseConfig) *sql.DB {
 	return db
 }
 
-func GetConfig(filepath string) DatabaseConfig {
+func GetConfig(filepath string, env string) DatabaseConfig {
 	if filepath == "" {
 		filepath = "config/database.toml"
 	}
@@ -44,5 +44,11 @@ func GetConfig(filepath string) DatabaseConfig {
 		log.Fatal(err)
 	}
 
-	return tmpconf["development"]
+	if conf, ok := tmpconf[env]; ok {
+		return conf
+	} else {
+		panic(env + " configuration is not present in " + filepath)
+	}
+
+	return tmpconf[env]
 }

@@ -34,7 +34,8 @@ func main() {
 			Usage: "create the db",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				conf := lib.GetConfig("")
+				fmt.Printf("%#v", c.Args())
+				conf := lib.GetConfig("", "development")
 				db := lib.Connect(conf)
 				lib.Create(db, conf)
 			},
@@ -76,7 +77,8 @@ func main() {
 			Usage: "drop the db",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				fmt.Printf("%#v", c.Args())
+				conf := lib.GetConfig("", "development")
+				lib.Drop(conf)
 			},
 		},
 		{
