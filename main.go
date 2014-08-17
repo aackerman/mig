@@ -25,6 +25,11 @@ func main() {
 			Value: path.Join("db", "migrate"),
 			Usage: "specify migration files location",
 		},
+		cli.StringFlag{
+			Name:  "env, e",
+			Value: "development",
+			Usage: "specify migration files location",
+		},
 	}
 
 	app.Commands = []cli.Command{
@@ -33,7 +38,7 @@ func main() {
 			Usage: "create the db",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				conf := lib.GetConfig(c.String("conf"), "development")
+				conf := lib.GetConfig(c.String("conf"), c.String("env"))
 				db := lib.Connect(conf)
 				lib.Create(db, conf)
 			},
@@ -43,7 +48,7 @@ func main() {
 			Usage: "run outstanding migrations",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				conf := lib.GetConfig(c.String("conf"), "development")
+				conf := lib.GetConfig(c.String("conf"), c.String("env"))
 				db := lib.Connect(conf)
 				lib.Migrate(c.String("migrations"), db)
 			},
@@ -77,7 +82,7 @@ func main() {
 			Usage: "drop the db",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				conf := lib.GetConfig(c.String("conf"), "development")
+				conf := lib.GetConfig(c.String("conf"), c.String("env"))
 				lib.Drop(conf)
 			},
 		},
@@ -86,7 +91,11 @@ func main() {
 			Usage: "run migrations against test database",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				log.Fatalln("Not implemented")
+				conf := lib.GetConfig(c.String("conf"), "test")
+				db := lib.Connect(conf)
+				lib.Drop(conf)
+				lib.Create(db, conf)
+				lib.Migrate(c.String("migrations"), db)
 			},
 		},
 		{

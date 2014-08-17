@@ -57,6 +57,9 @@ func GetDbMigrations(db *sql.DB) []string {
 		rows.Scan(&version)
 		versions = append(versions, version)
 	}
+	if rows.Err() != nil {
+		panic(rows.Err())
+	}
 	return versions
 }
 
