@@ -8,7 +8,6 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
-	"strconv"
 )
 
 func Migrate(mpath string, db *sql.DB) {
@@ -45,6 +44,15 @@ func CheckForOutstandingMigrations(mpath string, db *sql.DB) {
 	}
 }
 
+func GetCurrentVersion(db *sql.DB) string {
+	row := db.QueryRow(`select * from schema_migrations order by version desc limit 1`)
+	var version string
+	if err := row.Scan(&version); err != nil {
+		panic(err)
+	}
+	return version
+}
+
 func GetDbMigrations(db *sql.DB) []string {
 	rows, err := db.Query(`select * from schema_migrations`)
 	if err != nil {
@@ -71,7 +79,7 @@ func GetMigrationVersionFilenameMap(mpath string) map[string]string {
 	_map := make(map[string]string)
 	regex := regexp.MustCompile(`^(\d+?)_.*`)
 	for _, info := range infos {
-		_map[regex.FindString(info.Name())] = info.Name()
+		_map[regex.FindStringSubmatch(info.Name())[1]] = info.Name()
 	}
 	return _map
 }
@@ -79,8 +87,8 @@ func GetMigrationVersionFilenameMap(mpath string) map[string]string {
 func GetPendingMigrations(mpath string, db *sql.DB) map[string]string {
 	pending := GetMigrationVersionFilenameMap(mpath)
 	migrated := GetDbMigrations(db)
-	for version, _ := range migrated {
-		delete(pending, strconv.Itoa(version))
+	for _, version := range migrated {
+		delete(pending, version)
 	}
 	return pending
 }

@@ -74,7 +74,9 @@ func main() {
 			Usage: "print the last migrated version",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				log.Fatalln("Not implemented")
+				conf := lib.GetConfig(c.String("conf"), c.String("env"))
+				db := lib.Connect(conf)
+				log.Println(lib.GetCurrentVersion(db))
 			},
 		},
 		{
