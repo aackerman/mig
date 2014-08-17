@@ -66,7 +66,8 @@ func main() {
 			Usage: "dump the structure of the database",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				log.Fatalln("Not implemented")
+				conf := lib.GetConfig(c.String("conf"), c.String("env"))
+				lib.StructureDump(conf)
 			},
 		},
 		{
