@@ -5,19 +5,22 @@ import (
 	"log"
 	"os"
 	"path"
-	"runtime"
+	"path/filepath"
 	"time"
 
 	"bitbucket.org/pkg/inflect"
 )
 
-func Generate(basename string) {
+func Generate(mpath string, basename string) {
 	if basename == "" {
 		log.Fatalln("filename is empty")
 	}
 	basename = inflect.Underscore(basename)
-	_, currentfile, _, _ := runtime.Caller(1)
-	filename := path.Join(currentfile, "..", "db", "migrate", NextFilename(basename))
+	exefile, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatal(err)
+	}
+	filename := path.Join(exefile, mpath, NextFilename(basename))
 	f, err := os.Create(filename)
 	if err != nil {
 		panic(err)

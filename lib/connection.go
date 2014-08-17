@@ -34,9 +34,6 @@ func Connect(conf DatabaseConfig) *sql.DB {
 }
 
 func GetConfig(filepath string, env string) DatabaseConfig {
-	if filepath == "" {
-		filepath = "config/database.toml"
-	}
 	_, currentfile, _, _ := runtime.Caller(1) // get current file path
 	abspath := path.Join(path.Dir(currentfile), filepath)
 	tmpconf := map[string]DatabaseConfig{}

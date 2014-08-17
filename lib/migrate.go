@@ -4,17 +4,22 @@ import (
 	"database/sql"
 	"io/ioutil"
 	"log"
+	"os"
 	"path"
+	"path/filepath"
 	"regexp"
-	"runtime"
 	"strconv"
 )
 
-func Migrate(db *sql.DB) {
-	_, currentfile, _, _ := runtime.Caller(1)
-	pending := GetPendingMigrations(db)
+func Migrate(mpath string, db *sql.DB) {
+	exefile, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatal(err)
+	}
+	mpath = path.Join(exefile, mpath)
+	pending := GetPendingMigrations(mpath, db)
 	for version, filename := range pending {
-		contents, err := ioutil.ReadFile(path.Join(path.Dir(currentfile), "migrations", filename))
+		contents, err := ioutil.ReadFile(path.Join(mpath, filename))
 		if err != nil {
 			log.Fatalln("Readfile", filename, err)
 		}
@@ -29,8 +34,8 @@ func Migrate(db *sql.DB) {
 	}
 }
 
-func CheckForOutstandingMigrations(db *sql.DB) {
-	pending := GetPendingMigrations(db)
+func CheckForOutstandingMigrations(mpath string, db *sql.DB) {
+	pending := GetPendingMigrations(mpath, db)
 	if len(pending) > 0 {
 		log.Println("--- Pending Migrations ---")
 		for _, filename := range pending {
@@ -55,9 +60,8 @@ func GetDbMigrations(db *sql.DB) []string {
 	return versions
 }
 
-func GetMigrationVersionFilenameMap() map[string]string {
-	_, currentfile, _, _ := runtime.Caller(1)
-	infos, err := ioutil.ReadDir(path.Join(path.Dir(currentfile), "migrations"))
+func GetMigrationVersionFilenameMap(mpath string) map[string]string {
+	infos, err := ioutil.ReadDir(mpath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,8 +73,8 @@ func GetMigrationVersionFilenameMap() map[string]string {
 	return _map
 }
 
-func GetPendingMigrations(db *sql.DB) map[string]string {
-	pending := GetMigrationVersionFilenameMap()
+func GetPendingMigrations(mpath string, db *sql.DB) map[string]string {
+	pending := GetMigrationVersionFilenameMap(mpath)
 	migrated := GetDbMigrations(db)
 	for version, _ := range migrated {
 		delete(pending, strconv.Itoa(version))

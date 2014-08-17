@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mig/lib"
 	"os"
+	"path"
 
 	"github.com/codegangsta/cli"
 )
@@ -16,17 +17,15 @@ func main() {
 	flags := []cli.Flag{
 		cli.StringFlag{
 			Name:  "conf, c",
-			Value: "",
+			Value: path.Join("config", "database.toml"),
 			Usage: "specify database configuration file",
 		},
 		cli.StringFlag{
 			Name:  "migrations, m",
-			Value: "",
+			Value: path.Join("db", "migrate"),
 			Usage: "specify migration files location",
 		},
 	}
-
-	app.Flags = flags
 
 	app.Commands = []cli.Command{
 		{
@@ -34,8 +33,7 @@ func main() {
 			Usage: "create the db",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				fmt.Printf("%#v", c.Args())
-				conf := lib.GetConfig("", "development")
+				conf := lib.GetConfig(c.String("conf"), "development")
 				db := lib.Connect(conf)
 				lib.Create(db, conf)
 			},
@@ -45,7 +43,9 @@ func main() {
 			Usage: "run outstanding migrations",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				fmt.Printf("%#v", c.Args())
+				conf := lib.GetConfig(c.String("conf"), "development")
+				db := lib.Connect(conf)
+				lib.Migrate(c.String("migrations"), db)
 			},
 		},
 		{
@@ -77,7 +77,7 @@ func main() {
 			Usage: "drop the db",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				conf := lib.GetConfig("", "development")
+				conf := lib.GetConfig(c.String("conf"), "development")
 				lib.Drop(conf)
 			},
 		},
@@ -90,11 +90,12 @@ func main() {
 			},
 		},
 		{
-			Name:  "generate",
-			Usage: "generate a new migration",
-			Flags: flags,
+			Name:      "generate",
+			ShortName: "g",
+			Usage:     "generate a new migration",
+			Flags:     flags,
 			Action: func(c *cli.Context) {
-				lib.Generate(c.Args().First())
+				lib.Generate(c.String("migrations"), c.Args().First())
 			},
 		},
 	}
