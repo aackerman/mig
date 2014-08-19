@@ -30,6 +30,11 @@ func main() {
 			Value: "development",
 			Usage: "specify migration files location",
 		},
+		cli.StringFlag{
+			Name:  "schema",
+			Value: "db",
+			Usage: "specify location for schema dump",
+		},
 	}
 
 	app.Commands = []cli.Command{
@@ -67,7 +72,7 @@ func main() {
 			Flags: flags,
 			Action: func(c *cli.Context) {
 				conf := lib.GetConfig(c.String("conf"), c.String("env"))
-				lib.StructureDump(conf)
+				lib.StructureDump(c.String("schema"), conf)
 			},
 		},
 		{
