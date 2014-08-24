@@ -1,4 +1,4 @@
-mig
 config
 db
 schema.sql
+mig

@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"mig/lib"
+	"mig/pkg"
 	"os"
 	"path"
 
@@ -43,9 +43,9 @@ func main() {
 			Usage: "create the db",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				conf := lib.GetConfig(c.String("conf"), c.String("env"))
-				db := lib.Connect(conf)
-				lib.Create(db, conf)
+				conf := pkg.GetConfig(c.String("conf"), c.String("env"))
+				db := pkg.Connect(conf)
+				pkg.Create(db, conf)
 			},
 		},
 		{
@@ -53,9 +53,9 @@ func main() {
 			Usage: "run outstanding migrations",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				conf := lib.GetConfig(c.String("conf"), c.String("env"))
-				db := lib.Connect(conf)
-				lib.Migrate(c.String("migrations"), db)
+				conf := pkg.GetConfig(c.String("conf"), c.String("env"))
+				db := pkg.Connect(conf)
+				pkg.Migrate(c.String("migrations"), db)
 			},
 		},
 		{
@@ -71,8 +71,8 @@ func main() {
 			Usage: "dump the structure of the database",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				conf := lib.GetConfig(c.String("conf"), c.String("env"))
-				lib.StructureDump(c.String("schema"), conf)
+				conf := pkg.GetConfig(c.String("conf"), c.String("env"))
+				pkg.StructureDump(c.String("schema"), conf)
 			},
 		},
 		{
@@ -80,9 +80,9 @@ func main() {
 			Usage: "print the last migrated version",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				conf := lib.GetConfig(c.String("conf"), c.String("env"))
-				db := lib.Connect(conf)
-				log.Println(lib.GetCurrentVersion(db))
+				conf := pkg.GetConfig(c.String("conf"), c.String("env"))
+				db := pkg.Connect(conf)
+				log.Println(pkg.GetCurrentVersion(db))
 			},
 		},
 		{
@@ -90,8 +90,8 @@ func main() {
 			Usage: "drop the db",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				conf := lib.GetConfig(c.String("conf"), c.String("env"))
-				lib.Drop(conf)
+				conf := pkg.GetConfig(c.String("conf"), c.String("env"))
+				pkg.Drop(conf)
 			},
 		},
 		{
@@ -99,11 +99,11 @@ func main() {
 			Usage: "run migrations against test database",
 			Flags: flags,
 			Action: func(c *cli.Context) {
-				conf := lib.GetConfig(c.String("conf"), "test")
-				db := lib.Connect(conf)
-				lib.Drop(conf)
-				lib.Create(db, conf)
-				lib.Migrate(c.String("migrations"), db)
+				conf := pkg.GetConfig(c.String("conf"), "test")
+				db := pkg.Connect(conf)
+				pkg.Drop(conf)
+				pkg.Create(db, conf)
+				pkg.Migrate(c.String("migrations"), db)
 			},
 		},
 		{
@@ -112,7 +112,7 @@ func main() {
 			Usage:     "generate a new migration",
 			Flags:     flags,
 			Action: func(c *cli.Context) {
-				lib.Generate(c.String("migrations"), c.Args().First())
+				pkg.Generate(c.String("migrations"), c.Args().First())
 			},
 		},
 	}
